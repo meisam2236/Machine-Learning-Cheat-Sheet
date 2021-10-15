@@ -28,7 +28,7 @@ $y^i$->output variable
 $m$->training set
 $h_{\theta}(x^i)-y^i$->difference between the predicted value and the actual value
 # Gradient Descent
-repeat until convergence { $\theta_{j} := \theta_{j}-\alpha\frac{\partial}{\partial\theta_{j}}J(\theta_{0},\theta_{1})$     (for $j=0$ and $j=1$) }
+repeat until convergence { $$\theta_{j} := \theta_{j}-\alpha\frac{\partial}{\partial\theta_{j}}J(\theta_{0},\theta_{1})$$     (for $j=0$ and $j=1$) }
 $:=$->assignment mark
 $\alpha$->learning rate
 ## Local Optimum
