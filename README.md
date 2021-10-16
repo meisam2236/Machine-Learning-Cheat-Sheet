@@ -33,3 +33,15 @@ $:=$->assignment mark
 $\alpha$->learning rate
 ## Local Optimum
 ## Global Optimum
+
+```latex
+\begin{equation*}
+B = 
+\begin{bmatrix}
+1402 & 191 \\
+1371 & 821 \\
+949 & 1437 \\
+147 & 1448 \\
+\end{bmatrix}
+\end{equation*}
+```
