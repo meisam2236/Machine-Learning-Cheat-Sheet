@@ -1,26 +1,90 @@
+- [Machine Learning Definition](#machine-learning-definition)
+- [Machine Learning Algorithms](#machine-learning-algorithms)
+  - [Supervised Learning](#supervised-learning)
+    - [Regression](#regression)
+    - [Classification](#classification)
+  - [Unsupervised Learning](#unsupervised-learning)
+    - [Clustering](#clustering)
+    - [Dimensionality Reduction](#dimensionality-reduction)
+- [Others: Reinforcement Learning, Recommender Systems, Association Rules](#others-reinforcement-learning-recommender-systems-association-rules)
+- [Noise](#noise)
+  - [Teacher noise](#teacher-noise)
+- [Cost Function](#cost-function)
+  - [Loss(Error) Function](#losserror-function)
+  - [Squared Error Function or Mean Squared Error(MSE)](#squared-error-function-or-mean-squared-errormse)
+  - [(Batch)Gradient Descent](#batchgradient-descent)
+    - [Local Optimum](#local-optimum)
+    - [Global Optimum](#global-optimum)
+  - [Interpolation](#interpolation)
+- [Multivariate Linear Regression(multiple features)](#multivariate-linear-regressionmultiple-features)
+  - [Cost Function](#cost-function-1)
+  - [Gradient Descent](#gradient-descent)
+  - [Feature Scaling](#feature-scaling)
+    - [Mean Normalization](#mean-normalization)
+    - [How to make sure gradient descent is working correctly](#how-to-make-sure-gradient-descent-is-working-correctly)
+  - [Creating new Features](#creating-new-features)
+- [Fitting approach](#fitting-approach)
+- [Polynomial Regression](#polynomial-regression)
+  - [Extrapolation](#extrapolation)
+- [Normal Equation](#normal-equation)
+  - [What if $X^TX$ is non-invertible](#what-if-xtx-is-non-invertible)
 # Machine Learning Definition
 - Arthur Samuel (1959). Field of study that gives computers the ability to learn without being explicitly programmed.
 - Tom Mitchell (1998) Well-posed Learning Problem: A computer is said to learn from experience E with respect to some task T and some performance measure P, if its performance on T, as measured by P, improves with experience E.
+
+A machine learning model is a file that has been trained to recognize certain types of patterns. The model may be **predictive** to make predictions in the future, or **descriptive** to gain knowledge from data, or both.
 # Machine Learning Algorithms
 ## Supervised Learning
-In supervised learning, we are given a data set and already know what our correct output should look like, having the idea that there is a relationship between the input and the output.
+In supervised learning, the aim is to learn a mapping from the input to an output whose correct values are provided by a supervisor. 
+or in other word, in supervised learning, we are given a data set and already know what our correct output should look like, having the idea that there is a relationship between the input and the output.
 ### Regression
 In a regression problem, we are trying to predict results within a continuous output, meaning that we are trying to map input variables to some continuous function.
 - **Linear Regression or Univariate(one variable) Linear Regression**
 **Hypothesis:** $h_{\theta}(x)=\theta_{0}+\theta_{1}x$
+or by other form: $y=wx+w_0$
 ### Classification
 In a classification problem, we are instead trying to predict results in a discrete output. In other words, we are trying to map input variables into discrete categories.
+In engineering, classification is called **pattern recognition**.
+
+**Empirical error** is the proportion of training instances where predictions of h do not match the required values given in X. The empirical error is also sometimes called **the generalization error**. The reason is that actually, in most problems, we don't have access to the whole domain X of inputs, but only our training subset S. We want to generalize based on S, also called inductive learning.
+
+**False positive** is a result that indicates a given condition exists when it does not.
+**False negative** is a result that indicates a given condition does not exist when it exists.
+
+**Vapnik-Chervonenkis Dimension:**
+The maximum number of points that can be shattered by H is called the Vapnik-Chervonenkis (VC) dimension of H, is denoted as VC(H), and measures the capacity of H.
+With high probability$(1-\eta)$, Vapnik showed:
+$TestError \leq TrainError+\sqrt{\frac{H \log{(\frac{2m}{H})+H-log{\frac{\eta}{4}}}}{m}}$
+H->VC dimension of the classifier
+The equation above shows if H is very small or m is very large, the additional bounding term will be small. So low VC dimension compared to data will suggest that training and test error will be quite similar!
+E.g. If you have a line and want to seperate n lines, VC dimension will be $2^n$.
+
+**Probably approximately correct(PAC):**
+The goal of PAC is with high probability(probably), the selected hypothesis will have lower error(approximately correct).
+In the PAC model, we specify two small parameters, $\varepsilon$ and $\delta$, and require that with probability at least $(1-\delta)$ a system learn a concept with error at most $\varepsilon$.
+$\varepsilon$ gives an upper bound on the error in accuracy with which h approximated(accuracy: $1-\varepsilon$)
+E.g. $P(C XOR h) \leq \varepsilon$
+A hypothesis is said to be approximately correct, if the error is less than or equal to $\varepsilon$, where $0 \leq \varepsilon \leq \frac{1}{2}$
+$\delta$ gives the probability of failure in achieving this accuracy(confidence: $1-\delta$)
+E.g. $P(Error(h)\leq \varepsilon)>1-\delta$
+or $P(P(C XOR h) \leq \varepsilon)>1-\delta$
 ## Unsupervised Learning
-Unsupervised learning allows us to approach problems with little or no idea what our results should look like. We can derive structure from data where we don't necessarily know the effect of the variables.
+In unsupervised learning, there is no such supervisor and we have only input data.
+It allows us to approach problems with little or no idea what our results should look like. We can derive structure from data where we don't necessarily know the effect of the variables.
 ### Clustering
 We can derive this structure by clustering the data based on relationships among the variables in the data.
 ### Dimensionality Reduction
-# Others: Reinforcement Learning, Recommender Systems
+# Others: Reinforcement Learning, Recommender Systems, Association Rules
+In some applications, the output is a sequence of actions. In such case a single action is not important; what is important is the policy that is the sequence of correct actions to reach the goal. There is no such thing as the best action in any intermediate state; an action is good if it is part of a good policy. In such a case, the machine learning program should be able to assess the goodness of policies and learn from past good action sequences to be able to generate a policy.
 
+# Noise
+Noise is any unwanted anomaly in the data and due to noise, the class may be more difficult to learn and zero error may be infeasible with a simple hypothesis class.
+## Teacher noise
+There may be errors in labeling the data points, which may relabel positive instances as negative and vice verca. This is called teacher noise.
 
 # Cost Function
 We can measure the accuracy of our hypothesis function by using a cost function. The goal is to minimize the cost function.
-## Loss Function
+## Loss(Error) Function
 The loss function (or error) is for a single training example, while the cost function is over the entire training set.
 ## Squared Error Function or Mean Squared Error(MSE)
 $$J(\theta_{0},\theta_{1})=\frac{1}{2m} \sum_{i=1}^{m} (h_{\theta}(x^i)-y^i)^2$$
@@ -43,331 +107,8 @@ A solution that is optimal through entire set of candidate solutions.
 
 When gradient descent converged to a local minimum, it will be unchanged because of the slope(which is zero) even with the learning rate $\alpha$ fixed(That's because derivative term will be smaller as you approach to the local minimum).
 Gradient Descent for Linear Regression always leads to Convex Function(Bowl-shaped Function). So we just have one local optimum that is global optimum!
-# Linear Algebra
-## Matrix
-Rectangular array of numbers.
-$$
-\begin{equation*}
-A = 
-\begin{bmatrix}
-1402 & 191 \\
-1371 & 821 \\
-949 & 1437 \\
-147 & 1448
-\end{bmatrix}
-\end{equation*}
-$$
-### Dimensions of matrix
-Number of rows x number of columns
-In the example above, dim is 4x2
-### Matrix Elements (entries of matrix)
-$A_{ij}=$ "$i,j$ entry" in the $i^{th}$ row, $j^{th}$ column.
-$A_{1 1}=1402$
-$A_{3 2}=1437$
-$A_{1 2}=191$
-$A_{4 3}=undefiend$
-## Vector
-An nx1 matrix.
-$$
-\begin{equation*}
-y = 
-\begin{bmatrix}
-460 \\
-232 \\
-315 \\
-178
-\end{bmatrix}
-\end{equation*}
-$$
-The example above is a 4-dimensional vector.
-$y_{i}=$ $i^{th}$ element
-$y_{1}=460$
-$y_{2}=232$
-$y_{3}=315$
-We've also got 0-indexed vector!
-**Tip:** Usually we refer uppercase for matrices and lowercase for vectors.
-## Matrix Addition
-$$
-\begin{bmatrix}
-1 & 0 \\
-2 & 5 \\
-3 & 1
-\end{bmatrix}
-+
-\begin{bmatrix}
-4 & 0.5 \\
-2 & 5 \\
-0 & 1
-\end{bmatrix}
-=
-\begin{bmatrix}
-5 & 0.5 \\
-4 & 10 \\
-3 & 2
-\end{bmatrix}
-$$
-**Tip:** We can not add matrices with different dimensions.
-## Scalar(real number) Multiplication
-$$
-3\times
-\begin{bmatrix}
-1 & 0 \\
-2 & 5 \\
-3 & 1
-\end{bmatrix}
-=
-\begin{bmatrix}
-3 & 0 \\
-6 & 15 \\
-9 & 3
-\end{bmatrix}
-$$
-
-$$
-\begin{bmatrix}
-4 & 0 \\
-6 & 3
-\end{bmatrix}
-/4=
-\frac{1}{4}\times
-\begin{bmatrix}
-4 & 0 \\
-6 & 3
-\end{bmatrix}
-=
-\begin{bmatrix}
-1 & 0 \\
-\frac{3}{2} & \frac{3}{4}
-\end{bmatrix}
-$$
-## Combination of Operands
-$$
-3\times
-\begin{bmatrix}
-1 \\
-4 \\
-2
-\end{bmatrix}
-+
-\begin{bmatrix}
-0 \\
-0 \\
-5
-\end{bmatrix}
--
-\begin{bmatrix}
-3 \\
-0 \\
-2
-\end{bmatrix}
-/3=
-\begin{bmatrix}
-3 \\
-12 \\
-6
-\end{bmatrix}
-+
-\begin{bmatrix}
-0 \\
-0 \\
-5
-\end{bmatrix}
--
-\begin{bmatrix}
-1 \\
-0 \\
-\frac{2}{3}
-\end{bmatrix}
-=
-\begin{bmatrix}
-2 \\
-12 \\
-10\frac{1}{3}
-\end{bmatrix}
-$$
-## Matrix Vector Multiplication
-$$
-\begin{bmatrix}
-1 & 3 \\
-4 & 0 \\
-2 & 1
-\end{bmatrix}
-\begin{bmatrix}
-1 \\
-5
-\end{bmatrix}
-=
-\begin{bmatrix}
-(1\times1)+(3\times5) \\
-(4\times1)+(0\times5) \\
-(2\times1)+(1\times5)
-\end{bmatrix}
-=
-\begin{bmatrix}
-16 \\
-4 \\
-7
-\end{bmatrix}
-$$
-**Explanation:** We multiply first one $i^{th}$ row with elements of second one $j^{th}$ column and add them up. So the new dimension will be (number of row of the first one) x (number of column of the second one).
-
-## Turn hypothesis to vector matrix multiplication(More efficient!)
-Assume we have house sizes and wanted to predict the price:
-House sizes: 2104 - 1416 - 1534 - 852
-hypothesis: $h_{\theta}(x)=-40+0.25x$
-$$
-\begin{bmatrix}
-1 & 2104 \\
-1 & 1416 \\
-1 & 1534 \\
-1 & 852
-\end{bmatrix}
-\times
-\begin{bmatrix}
--40 \\
-0.25
-\end{bmatrix}
-=
-\begin{bmatrix}
-(-40\times1)+(0.25\times2104) \\
-(-40\times1)+(0.25\times1416) \\
-(-40\times1)+(0.25\times1534) \\
-(-40\times1)+(0.25\times852) \\
-\end{bmatrix}
-$$
-**And the code will be**-> prediction = data_matrx * parameters
-
-## Matrix Matrix Multiplication
-$$
-\begin{bmatrix}
-1 & 3 & 2 \\
-4 & 0 & 1 
-\end{bmatrix}
-\begin{bmatrix}
-1 & 3 \\
-0 & 1 \\
-5 & 2
-\end{bmatrix}
-=
-\begin{bmatrix}
-(1\times1)+(3\times0)+(2\times5) & (1\times3)+(3\times1)+(2\times2) \\
-(4\times1)+(0\times0)+(1\times5) & (4\times3)+(0\times1)+(1\times2)
-\end{bmatrix}
-=
-\begin{bmatrix}
-11 & 10 \\
-9 & 14 
-\end{bmatrix}
-$$
-## Turn hypothesis to matrix matrix multiplication(More efficient!)
-Assume we have house sizes and wanted to predict the price:
-House sizes: 2104 - 1416 - 1534 - 852
-Having 3 competing hypothesis:
-1. $h_{\theta}(x)=-40+0.25x$
-2. $h_{\theta}(x)=200+0.1x$
-3. $h_{\theta}(x)=-150+0.4x$
-
-$$
-\begin{bmatrix}
-1 & 2104 \\
-1 & 1416 \\
-1 & 1534 \\
-1 & 852
-\end{bmatrix}
-\times
-\begin{bmatrix}
--40 & 200 & -150 \\
-0.25 & 0.1 & 0.4
-\end{bmatrix}
-=
-\begin{bmatrix}
-486 & 410 & 692 \\
-314 & 342 & 416 \\
-344 & 353 & 464 \\
-173 & 285 & 191 \\
-\end{bmatrix}
-$$
-**Explanation:** The first column would be the prediction of first $h_{\theta}(x)$, the second column would be the prediction of second $h_{\theta}(x)$ and so on.
-
-In matrices multiplication we have two rules:
-1.  not commutative-> $A \times B\neq B \times A$
-2. associative-> $A \times B \times C = A \times (B \times C) = (A \times B) \times C$
-
-## Identity Matrix
-Denoted $I$(or $I_{n \times n}$).
-
-Example:
-$$
-\begin{bmatrix}
-1 & 0 \\
-0 & 1
-\end{bmatrix}
-\ \ \ \ \ \ \
-\begin{bmatrix}
-1 & 0 & 0 \\
-0 & 1 & 0 \\
-0 & 0 & 1
-\end{bmatrix}
-\ \ \ \ \ \ \
-\begin{bmatrix}
-1 & 0 & 0 & 0 \\
-0 & 1 & 0 & 0 \\
-0 & 0 & 1 & 0 \\
-0 & 0 & 0 & 1
-\end{bmatrix}
-$$
-
-For any matrix $A$,
-$A \times I = I \times A = A$
-Remember that we said $A \times B\neq B \times A$, but if B is an identity matrix, $A \times B = B \times A$ !
-## Matrix Inverse
-If $A$ is an $m \times m$ matrix, and if it has an inverse,
-$A.A^{-1}=A^{-1}.A=I$
-**Note that the matrix should be a squre matrix.**
-$$
-\begin{bmatrix}
-3 & 4 \\
-2 & 16
-\end{bmatrix}
-\begin{bmatrix}
-0.4 & -0.1 \\
--0.05 & 0.075 
-\end{bmatrix}
-=
-\begin{bmatrix}
-1 & 0 \\
-0 & 1
-\end{bmatrix}
-= I_{2\times2}
-$$
-Matrices that don't have an inverse are **"singular"** or **"degenerate"**.like this:
-$$
-\begin{bmatrix}
-0 & 0 \\
-0 & 0
-\end{bmatrix}
-$$
-## Matrix Transpose
-Let $A$ be an $m \times n$ matrix, and let $B=A^T$.
-Then $B$ is an $n \times m$ matrix and $B_{ij}=A_{ji}$
-Suppose we have this matrice:
-$$
-A = 
-\begin{bmatrix}
-1 & 2 & 0 \\
-3 & 5 & 9
-\end{bmatrix}
-$$
-Transpose of this matrix should be:
-$$
-A^T = 
-\begin{bmatrix}
-1 & 3 \\
-2 & 5 \\
-0 & 9
-\end{bmatrix}
-$$
-The way that we transpose a matrix is that first row will be the first column, second row will be the second column and so on.
+## Interpolation
+In regression, if there is no noise, the task is interpolation.
 # Multivariate Linear Regression(multiple features)
 $n$->number of features
 $x^{(i)}$->input (features) of $i^{th}$ training example
@@ -449,7 +190,19 @@ Then try to do $3\times$ more or less to find best fitted!
 
 ## Creating new Features
 Sometimes, depending on your problem, you can create better input to deal with. For example, if you have frontage and depth of a house to calculate the pricing, you can come up with better input which is area, by multiplying frontage by depth!
+
+# Fitting approach
+With a complex model, one can make a perfect fit to the data and attain zero errro. Another possibility is to keep the model simple and allow some error.
+Using the simple one makes more sense:
+1. It is a simple model to use.
+2. It is a simple model to train and has fewer parameters.
+3. It is a simple model to explain.
+4. It has less variance and is less affected by single instances.
+
+A simple model have less variance and more bias. Finding the optimal model corresponds to minimizing bothe the bias and the variance.
+Remember a simple(but not too simple) model would generalize better than a complex model.
 # Polynomial Regression
+In cases where the linear model is too restrictive, we can use polynomial regression.
 With polynomial, we can **change the behavior or curve** of our hypothesis function by making it a quadratic, cubic or square root function (or any other form):
 $\theta_{0}+\theta_{1}x+\theta_{2}x^{2}$
 or even better for house pricing(price is not comming down further we go!):
@@ -460,6 +213,8 @@ $\theta_{0}+\theta_{1}x+\theta_{2}x^{2}+\theta_{3}x^{3}$
 For the house pricing example, we have other choices too, like:
 $h_{\theta}(x)=\theta_{0}+\theta{1}(size)+\theta_{2}\sqrt{(size)}$
 And there is many other choices...
+## Extrapolation
+In polynomial interpolation, given N points, we find the $(N-1)$st degree polynomial that we can use to predict the output for any $x$. This is called extrapolation.
 # Normal Equation
 Another method to solve $\theta$ analytically. Assume we had this:
 $J(\theta_{0},\theta_{1},...,\theta_{m})=\frac{1}{2m}\sum_{i=1}^{m}(h_{\theta}(x^{i})-y^{i})^{2}$
@@ -530,89 +285,3 @@ There are two cause for this:
 - Redundant features(linearly dependent, e.g. size in square feet and size in square meters)
 - Too many features(e.g. $m \leqslant n$)->Delete some features, or use regularization.
 
-# Matlab/Octave
-You can first write your code in matlab or octave to make sure the project is working; Then make it with C++ or Java for better performance!
-## Basic Operations
-The codes below are one-line codes:
-```matlab
-5+6 % addition
-3-2 % subtraction
-5*8 % multiplication
-1/2 % division
-2^6 % exponent
-
-1 == 2 % equality
-1 ~= 2 % not equality
-1 && 0 % AND
-1 || 0 % OR
-xor(1, 0) % OR
-
-PS1('>> '); % change octave prompt
-
-a = 3; % variable defining(semicolon supressing output)
-b = 'hi'; % string assignment
-c = (3>=1) % which is True(1)
-a=pi % pi variable
-disp(a) % more complex printing(which is display)
-disp(sprintf('2 decimals: %0.2f', a)) % generate string a
-format long % display in long decimal numbers
-format short % display in short decimal numbers
-
-A = [1 2; 3 4; 5 6] % define matix A
-a = [1 2 3] % define row vector a
-a = [1; 2; 3] % define column vector a
-v = 1:6 % define a vector with values 1 to 6
-v = 1:0.1:2 % define a vector with values start:step:stop
-ones(2, 3) % matrix 2 by 3 with value 1
-C = 2*ones(2,3) % generate matrix 2 by 3 with value 2
-w = zeros(1, 3) % row vector with value 0
-w = rand(1, 3) % row vector with random values
-randn(1, 3) % a gaussian distribution with mean zero and standard deviation(variance) equal to one
-
-w = -6 + sqrt(10)*(randn(1, 10000)); % complex vector
-hist(w) % histogram
-hist(w, 50) % histogram with 50 bins
-I = eye(4)  % 4 by 4 identity matrix
-
-help(eye) % help function for eye command
-
-a = size(A) % size of the matrix
-size(a) % a is now a vector
-size(A, 1) % first dimension size(number of row)
-size(A, 2) % second dimension size(number of column)
-length(A) % size of a longest dimension
-
-A(3, 2) % element of third row second column
-A(2, :) % elements in second row
-A([1 3], :) % all elements in first and third row
-A(:,2) = [10; 11; 12]  % assign 10, 11, 12 to second column
-A = [A, [100, 101, 102]]; % append another column to A
-A(:) % put all elements of A into a single vector
-A = [1 2; 3 4; 5 6]
-B = [11 12; 13 14; 15 16]
-C = [A, B] % concating A and B on the side
-C = [A; B] % concating A and B on top of each other
-```
-## Moving Data Around
-The codes below are one-line codes:
-```matlab
-pwd % current directory(path)
-cd 'C:\users\meisa\Desktop' % change directory
-ls % list files in current direcotory
-load featuresX.dat % loading .dat file
-load('priceY.dat') % another way of loading .dat file
-who % shows all variables
-whos % shows variabels with detail
-clear featuresX % delete variable
-v = priceY(1:10) % get first 10 elements of another variable
-save hello.mat v; % save variable v to hello.mat file(binary format-compressed)
-save hello.txt v -ascii % save variable v to hello.txt file(human readable)
-```
-## Computing on Data
-The codes below are one-line codes:
-```matlab
-A = [1 2; 3 4; 5 6]
-B = [11 12; 13 14; 15 16]
-C = [1 1; 2 2]
-A*C
-```
