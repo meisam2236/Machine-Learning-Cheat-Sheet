@@ -302,15 +302,13 @@ $$
 1 & 0 \\
 0 & 1
 \end{bmatrix}
-$$
-$$
+\ \ \ \ \ \ \
 \begin{bmatrix}
 1 & 0 & 0 \\
 0 & 1 & 0 \\
 0 & 0 & 1
 \end{bmatrix}
-$$
-$$
+\ \ \ \ \ \ \
 \begin{bmatrix}
 1 & 0 & 0 & 0 \\
 0 & 1 & 0 & 0 \\
@@ -342,7 +340,7 @@ $$
 \end{bmatrix}
 = I_{2\times2}
 $$
-Matrices that don't have an inverse are **"singular"** or **"digenerate"**.like this:
+Matrices that don't have an inverse are **"singular"** or **"degenerate"**.like this:
 $$
 \begin{bmatrix}
 0 & 0 \\
@@ -370,3 +368,251 @@ A^T =
 \end{bmatrix}
 $$
 The way that we transpose a matrix is that first row will be the first column, second row will be the second column and so on.
+# Multivariate Linear Regression(multiple features)
+$n$->number of features
+$x^{(i)}$->input (features) of $i^{th}$ training example
+$x_{j}^{(i)}$->value of feature $j$ in $i^{th}$ training example
+
+**Hypothesis:** $h_{\theta}(x)=\theta_{0}+\theta_{1}x_{1}+\theta_{2}x_{2}+...+\theta_{n}x_{n}$
+For convenience of notation, define $x_{0}=1$:
+$$
+x=
+\begin{bmatrix}
+x_{0} \\
+x_{1} \\
+x_{2} \\
+... \\
+x_{n}
+\end{bmatrix}
+\in {\rm I\!R}^{n+1}
+\ \ \ \ \ \ \ \ \ \ \ \ 
+\theta=
+\begin{bmatrix}
+\theta_{0} \\
+\theta_{1} \\
+\theta_{2} \\
+... \\
+\theta_{n}
+\end{bmatrix}
+\in {\rm I\!R}^{n+1}
+$$
+**Hypothesis will be:** $h_{\theta}(x)=\theta_{0}x_{0}+\theta_{1}x_{1}+\theta_{2}x_{2}+...+\theta_{n}x_{n}=\theta^{T}x$
+## Cost Function
+$J(\theta_{0},\theta_{1},...,\theta_{n})=J(\theta)=\frac{1}{2m}\sum_{i=1}^{m}(h_{\theta}(x^{i})-y^{i})^{2}$
+## Gradient Descent
+Repeat {
+$\theta_{j}:=\theta_{j}-\alpha\frac{\partial}{\partial\theta_{j}}J(\theta)$
+} (simultaneously update for every $j=0,...,n$)
+simplified {
+$\theta_{0}:=\theta_{0}-\alpha\frac{1}{m}\sum_{i=1}^{m}(h_{\theta}(x^i)-y^i)x_{0}^i$
+$\theta_{1}:=\theta_{1}-\alpha\frac{1}{m}\sum_{i=1}^{m}(h_{\theta}(x^i)-y^i)x_{1}^i$
+$\theta_{2}:=\theta_{2}-\alpha\frac{1}{m}\sum_{i=1}^{m}(h_{\theta}(x^i)-y^i)x_{2}^i$
+...
+}
+## Feature Scaling
+The idea is to make sure features are on a similar scale(Thus makes the gradient descending convergence much faster!).
+**E.g.**
+1. $x_{1}$ = size (0-2000 square feet) -> $x_{1}=\frac{size(feet^{2})}{2000}$ 
+2. $x_{2}$ = number of bedrooms (1-5) -> $x_{2}=\frac{number of bedrooms}{5}$
+
+So we end up with $0 \leqslant x_{1} \leqslant1$ and $0 \leqslant x_{2} \leqslant1$
+More generally what we often want to do is to get every feature into approximately a $-1 \leqslant x_{i} \leqslant1$ range.
+### Mean Normalization
+Replace $x_{i}$ with $x_{i}-\mu_{i}$ to make features have approximately zero mean(Do not apply to $x_{0}=1$).
+**E.g.**
+1. $x_{1}=\frac{size-1000}{2000}$ Assume the average size is 1000
+2. $x_{2}=\frac{number of bedrooms-2}{5}$ Assume average number of bedrooms is 2
+
+And we end up with $-0.5 \leqslant x_{1} \leqslant -0.5, -0.5 \leqslant x_{2} \leqslant 0.5$
+
+More general formula will be $x_{1}=\frac{x_{1}-\mu_{1}}{S_{1}}$
+$\mu_{1}$->average value of $x_{1}$ in training set
+$S_{1}$->range of values of $x_{1}$(maximum value-minimum value)
+The $S_{1}$ could be standard deviation(better results):
+$\sigma=\sqrt{\frac{\sum(x_{i}-\mu)^{2}}{N}}$
+$\sigma$->standard deviation
+$N$->size of values
+$\mu$->mean
+### How to make sure gradient descent is working correctly
+You can draw chart of y=Cost Function, x=Number of Iterations($J(\theta)$ should decrease after every iteration) and when it converge, you can stop program.
+You can come up with some automatic convergence test, like:
+Declare convergence if $J(\theta)$ decreases by less than $10^{-3}$ in one iteration.
+The threshold picking in automatic convergence test is quite hard! So it's better to use the chart.
+**Debugging**
+If $J(\theta)$ is increasing, it's a clear sign that you should use smaller $\alpha$.
+If $J(\theta)$ goes up and down repeatedly, you should use smaller $\alpha$.
+If $\alpha$ is too small, gradient descent can be slow to converge.
+
+To choose $\alpha$, try 
+$$..., \ \ \ 0.001, \ \ \ 0.01, \ \ \ 0.1, \ \ \ 1, \ \ \ ...$$
+Then try to do $3\times$ more or less to find best fitted!
+
+## Creating new Features
+Sometimes, depending on your problem, you can create better input to deal with. For example, if you have frontage and depth of a house to calculate the pricing, you can come up with better input which is area, by multiplying frontage by depth!
+# Polynomial Regression
+With polynomial, we can **change the behavior or curve** of our hypothesis function by making it a quadratic, cubic or square root function (or any other form):
+$\theta_{0}+\theta_{1}x+\theta_{2}x^{2}$
+or even better for house pricing(price is not comming down further we go!):
+$\theta_{0}+\theta_{1}x+\theta_{2}x^{2}+\theta_{3}x^{3}$
+
+**Tip:** When you make polynomial regression, the **feature scaling** become more important because of the quadratic, cubic or other functions.
+
+For the house pricing example, we have other choices too, like:
+$h_{\theta}(x)=\theta_{0}+\theta{1}(size)+\theta_{2}\sqrt{(size)}$
+And there is many other choices...
+# Normal Equation
+Another method to solve $\theta$ analytically. Assume we had this:
+$J(\theta_{0},\theta_{1},...,\theta_{m})=\frac{1}{2m}\sum_{i=1}^{m}(h_{\theta}(x^{i})-y^{i})^{2}$
+According to calculus, we can do this:
+$\frac{\partial}{\partial \theta_{j}}J(\theta)=...=0$ (for every $j$)
+So the general formula would be this:
+$$\theta=(X^{T}X)^{-1}X^{T}y$$
+To calculate the X:
+$$
+x^{i}=
+\begin{bmatrix}
+x_{0}^{i} \\
+x_{1}^{i} \\
+x_{2}^{i} \\
+... \\
+x_{n}^{i} \\
+\end{bmatrix}
+\ \ \ \ \ \ \ \
+X = 
+\begin{bmatrix}
+..., (x^{1})^T, ... \\
+..., (x^{2})^T, ... \\
+... \\
+..., (x^{m})^T, ... \\
+\end{bmatrix}
+$$
+And the $y$ is the result vector.
+**E.g.**
+
+|$x_{0}$|Size(square feet)|Number of bedrooms|Number of floors|Age of home(years)|Price($1000)|
+|---|---|---|---|---|---|
+|1|2104|5|1|45|460|
+|1|1416|3|2|40|232|
+|1|1534|3|2|30|315|
+|1|852|2|1|36|178|
+
+$$
+X =
+\begin{bmatrix}
+1 & 2104 & 5 & 1 & 45 & 460 \\
+1 & 1416 & 3 & 2 & 40 & 232 \\ 
+1 & 1534 & 3 & 2 & 30 & 315 \\
+1 & 852 & 2 & 1 & 36 & 178 
+\end{bmatrix}
+\ \ \ \ \ \ \ 
+y = 
+\begin{bmatrix}
+460 \\
+232 \\
+315 \\
+178
+\end{bmatrix}
+$$
+**Tip:** There is **no need** to do feature scaling with the normal equation.
+
+|Gradient Descent|Normal Equation|
+|---|---|
+|Need to choose alpha|No need to choose alpha|
+|Needs many iterations|No need to iterate|
+|$O(kn^2)$|$O(n^3)$, need to calculate inverse of $X^TX$|
+|Works well when n is large|Slow if n is very large|
+
+With the normal equation, computing the inversion has complexity $O(n^3)$. So if we have a very large number of features, the normal equation will be slow. In practice, when n exceeds 10,000 it might be a good time to go from a normal solution to an iterative process.
+
+## What if $X^TX$ is non-invertible
+Remember that matrices without an inverse are **"singular"** or **"degenerate"**
+There are two cause for this:
+- Redundant features(linearly dependent, e.g. size in square feet and size in square meters)
+- Too many features(e.g. $m \leqslant n$)->Delete some features, or use regularization.
+
+# Matlab/Octave
+You can first write your code in matlab or octave to make sure the project is working; Then make it with C++ or Java for better performance!
+## Basic Operations
+The codes below are one-line codes:
+```matlab
+5+6 % addition
+3-2 % subtraction
+5*8 % multiplication
+1/2 % division
+2^6 % exponent
+
+1 == 2 % equality
+1 ~= 2 % not equality
+1 && 0 % AND
+1 || 0 % OR
+xor(1, 0) % OR
+
+PS1('>> '); % change octave prompt
+
+a = 3; % variable defining(semicolon supressing output)
+b = 'hi'; % string assignment
+c = (3>=1) % which is True(1)
+a=pi % pi variable
+disp(a) % more complex printing(which is display)
+disp(sprintf('2 decimals: %0.2f', a)) % generate string a
+format long % display in long decimal numbers
+format short % display in short decimal numbers
+
+A = [1 2; 3 4; 5 6] % define matix A
+a = [1 2 3] % define row vector a
+a = [1; 2; 3] % define column vector a
+v = 1:6 % define a vector with values 1 to 6
+v = 1:0.1:2 % define a vector with values start:step:stop
+ones(2, 3) % matrix 2 by 3 with value 1
+C = 2*ones(2,3) % generate matrix 2 by 3 with value 2
+w = zeros(1, 3) % row vector with value 0
+w = rand(1, 3) % row vector with random values
+randn(1, 3) % a gaussian distribution with mean zero and standard deviation(variance) equal to one
+
+w = -6 + sqrt(10)*(randn(1, 10000)); % complex vector
+hist(w) % histogram
+hist(w, 50) % histogram with 50 bins
+I = eye(4)  % 4 by 4 identity matrix
+
+help(eye) % help function for eye command
+
+a = size(A) % size of the matrix
+size(a) % a is now a vector
+size(A, 1) % first dimension size(number of row)
+size(A, 2) % second dimension size(number of column)
+length(A) % size of a longest dimension
+
+A(3, 2) % element of third row second column
+A(2, :) % elements in second row
+A([1 3], :) % all elements in first and third row
+A(:,2) = [10; 11; 12]  % assign 10, 11, 12 to second column
+A = [A, [100, 101, 102]]; % append another column to A
+A(:) % put all elements of A into a single vector
+A = [1 2; 3 4; 5 6]
+B = [11 12; 13 14; 15 16]
+C = [A, B] % concating A and B on the side
+C = [A; B] % concating A and B on top of each other
+```
+## Moving Data Around
+The codes below are one-line codes:
+```matlab
+pwd % current directory(path)
+cd 'C:\users\meisa\Desktop' % change directory
+ls % list files in current direcotory
+load featuresX.dat % loading .dat file
+load('priceY.dat') % another way of loading .dat file
+who % shows all variables
+whos % shows variabels with detail
+clear featuresX % delete variable
+v = priceY(1:10) % get first 10 elements of another variable
+save hello.mat v; % save variable v to hello.mat file(binary format-compressed)
+save hello.txt v -ascii % save variable v to hello.txt file(human readable)
+```
+## Computing on Data
+The codes below are one-line codes:
+```matlab
+A = [1 2; 3 4; 5 6]
+B = [11 12; 13 14; 15 16]
+C = [1 1; 2 2]
+A*C
+```
