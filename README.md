@@ -82,6 +82,17 @@ Noise is any unwanted anomaly in the data and due to noise, the class may be mor
 ## Teacher noise
 There may be errors in labeling the data points, which may relabel positive instances as negative and vice verca. This is called teacher noise.
 
+# Data
+Depending on what you want to do, you need to divide your data into two or three parts. It should be training and test set, or training, validation and test set. If you don't need to choose an appropriate model from several rivaling approaches, you can re-partition your set to training and test set, without performing the validation of your trained model.
+## Training-set
+A training data set is a data set of examples used during the learning process and is used to fit the parameters (e.g., weights) of, for example, a classifier.
+## Validation-set
+Given a set of possible hypothesis classes, for each we fit the best hypothesis on the training set. The hypothesis that is the most accurate on the validation set is the best one. This process is called **cross-validation**.
+A validation set is a data-set of examples used to tune the hyperparameters (i.e. the architecture) of a classifier.
+## Test-set
+If we need to report the error to give an idea about the expected error of our best model, we should not use the validation error. We need a third set, which is test-set, sometimes also called the **publication set**.
+A test set is therefore a set of examples used only to assess the performance (i.e. generalization) of a fully specified classifier.
+
 # Cost Function
 We can measure the accuracy of our hypothesis function by using a cost function. The goal is to minimize the cost function.
 ## Loss(Error) Function
@@ -92,6 +103,9 @@ $x^i$->input variable
 $y^i$->output variable
 $m$->training set
 $h_{\theta}(x^i)-y^i$->difference between the predicted value and the actual value
+## Optimization procedure
+Minimizing the loss function:
+$\theta^{*}=arg min_{\theta}E(\theta|X)$
 ## (Batch)Gradient Descent
 Batch in it indecates that each step of gradient descent uses all the training examples.
 repeat until convergence { $\theta_{j} := \theta_{j}-\alpha\frac{\partial}{\partial\theta_{j}}J(\theta_{0},\theta_{1})$     (for $j=0$ and $j=1$) }
@@ -109,6 +123,13 @@ When gradient descent converged to a local minimum, it will be unchanged because
 Gradient Descent for Linear Regression always leads to Convex Function(Bowl-shaped Function). So we just have one local optimum that is global optimum!
 ## Interpolation
 In regression, if there is no noise, the task is interpolation.
+## well-posed and ill-posed problem
+### well-posed
+- A solution exists
+- The solution is unique
+- The solution's behaviour changes continously with the initial conditions.
+### ill-posed problem
+A problem which may have more than one solution, or in which the solutions depend discontinuously upon the initial data. Also known as **improperly posed problem**.
 # Multivariate Linear Regression(multiple features)
 $n$->number of features
 $x^{(i)}$->input (features) of $i^{th}$ training example
