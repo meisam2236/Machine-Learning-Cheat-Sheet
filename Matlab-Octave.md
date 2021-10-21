@@ -8,6 +8,10 @@
 		- [while](#while)
 		- [if](#if)
 - [Functions](#functions)
+- [Vecotorization](#vecotorization)
+	- [Unvectorized implementation](#unvectorized-implementation)
+	- [Vectorized implementation](#vectorized-implementation)
+	- [Vecotorized gradient descent](#vecotorized-gradient-descent)
 # Matlab/Octave
 You can first write your code in matlab or octave to make sure the project is working; Then make it with C++ or Java for better performance!
 ## Basic Operations
@@ -241,3 +245,35 @@ y = [1; 2; 3]
 theta = [0; 1]
 j = costFunction(X, y, theta) % it gives 0 because theta is exactly right!
 ```
+# Vecotorization
+## Unvectorized implementation
+$h_{\theta}(x)=\sum_{j=0}^{n}\theta_{j}x_{j}$
+```matlab
+theta = [1; 2; 3]
+x = [1; 2; 3]
+
+prediction = 0.0;
+for j = 1:n+1,
+	prediction = prediction + theta(j) * x(j)
+end;
+```
+## Vectorized implementation
+$h_{\theta}(x)=\theta^{T}x$
+```matlab
+theta = [1; 2; 3]
+x = [1; 2; 3]
+
+prediction = theta' * x;
+```
+## Vecotorized gradient descent
+We've got these:
+$\theta_{0} := \theta_{0}-\alpha \frac{1}{m} \sum_{i=1}^{m}(h_{\theta}(x^i)-y^i)x_{0}^i$
+$\theta_{1} := \theta_{1}-\alpha \frac{1}{m} \sum_{i=1}^{m}(h_{\theta}(x^i)-y^i)x_{1}^i$
+$\theta_{2} := \theta_{2}-\alpha \frac{1}{m} \sum_{i=1}^{m}(h_{\theta}(x^i)-y^i)x_{2}^i$
+$(n=2)$
+So we come up with this:
+$\theta := \theta - \alpha \delta$
+where $\delta = \frac{1}{m} \sum_{i=1}^{m}(h_{\theta}(x^i)-y^i)x^i$
+We know that $x^i$ part in $\delta$ is a vector and $(h_{\theta}(x^i)-y^i)$ part is not. So for this:
+$\sum_{i=1}^{m}(h_{\theta}(x^i)-y^i)x^i$
+We got sum of multiplication of a number to a vector.
