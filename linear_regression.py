@@ -49,7 +49,11 @@ class LinearRegression:
         plt.ylabel('Error')
         plt.xlabel('Iteration')
         plt.show()
-        
+       
+    def normal_equation(self):
+        weights = np.dot(np.dot(np.linalg.inv(np.dot(self.x_train_modified.transpose(), self.x_train_modified)), self.x_train_modified.transpose()), self.y_train_modified)
+        return weights
+    
     def plot_linear_regression(self, weights: np.ndarray, feature_num: int = 0, ylabel: str = '', xlabel: str = ''):
         a = weights.item(1)
         b = weights.item(0)
@@ -66,7 +70,7 @@ class LinearRegression:
         
     def predict(self, weights: np.ndarray, X: np.ndarray) -> int:
         X = np.asarray(X, dtype=np.float32)
-        return int((X * weights).item(0))
+        return int(np.dot(X, weights)[0])
 
 class LinearRegressionTest:
     def single_feature_linear_regression():
@@ -79,7 +83,7 @@ class LinearRegressionTest:
         weights = linear_regression.gradient_descent(weights = np.zeros((features_count, 1)))
         print(f'weights: {weights}')
         linear_regression.plot_cost_history()
-        linear_regression.plot_linear_regression(weights)
+        linear_regression.plot_linear_regression(weights, ylabel='Profit in $10,000s', xlabel='Population of City in 10,000s')
         print(f'for population=35000, we predict a profit of {linear_regression.predict(weights, X=[1, 35000]):,}')
         print(f'for population=70000, we predict a profit of {linear_regression.predict(weights, X=[1, 70000]):,}')
         
@@ -96,6 +100,17 @@ class LinearRegressionTest:
         linear_regression.plot_linear_regression(weights, feature_num=0, ylabel='House Price', xlabel='Area(sq-ft)')
         print(f'for area=1650 and 3 bedrooms, we predict a price of {linear_regression.predict(weights, X=[1, 1650, 3]):,}')
         
+    def normal_equation_linear_regression():
+        MULTI_FEATURE_DATA_NAME = 'ex1data2.txt'
+        data = pd.read_csv(MULTI_FEATURE_DATA_NAME, header=None)
+        linear_regression = LinearRegression(data)
+        linear_regression.plot_data(feature_num=0, ylabel='House Price', xlabel='Area(sq-ft)')
+        weights = linear_regression.normal_equation()
+        print(f'weights: {weights}')
+        linear_regression.plot_linear_regression(weights, feature_num=0, ylabel='House Price', xlabel='Area(sq-ft)')
+        print(f'for area=1650 and 3 bedrooms, we predict a price of {linear_regression.predict(weights, X=[1, 1650, 3]):,}')
+        
 if __name__=="__main__":
-    LinearRegressionTest.single_feature_linear_regression()
+    # LinearRegressionTest.single_feature_linear_regression()
     # LinearRegressionTest.multi_feature_linear_regression()
+    LinearRegressionTest.normal_equation_linear_regression()
